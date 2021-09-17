@@ -13,6 +13,37 @@ from math import radians, cos, sin, asin, sqrt
 from folium import plugins
 from folium.features import DivIcon
 
+def type_check(variable: object, interested_type: object):
+    """
+    Generic function that will allow us to check the types of variables
+    being passed to other functions to ensure nothing weird is going to happen
+    due to variable types
+
+    Parameters
+    ----------
+    variable : object
+        variable name of interest
+    interested_type : object
+        the type of object you want to be sure the variable is
+
+    Raises
+    ------
+    TypeError
+        if the variable type and the interested_type type do not match, this
+        error is thrown that shows the type that is expected and the type that
+        is actually passed
+
+    Returns
+    -------
+    None.
+
+    """
+    if not isinstance(variable, interested_type):
+        raise TypeError('Expected {0}; got {1}'.format(str(interested_type.__name__), 
+                                                       str(type(variable).__name__)))
+    else:
+        pass
+
 class CenterOfGravityModel(object):
     '''
     Center of Gravity Model - Essentially weighted k-means for lat/long 
@@ -22,6 +53,7 @@ class CenterOfGravityModel(object):
       """
       Initiation function
       """
+      type_check(options, dict)
       self.options = options
         # store models after training for later scoring
       self.models = dict()
@@ -33,6 +65,7 @@ class CenterOfGravityModel(object):
       """
       Calls trainSingleFrame function on each split specified in the options['splitCol'] column
       """
+      type_check(frame, pd.DataFrame)
       self.models = dict()
         
       frames = list(frame.groupby(by=self.options['splitCol']))
@@ -50,6 +83,7 @@ class CenterOfGravityModel(object):
       Runs a kmeans model and assigns it to the value in the self.models dictionary
       under the key that corresponds to the scenario name
       """
+      type_check(frame, pd.DataFrame)
       splitVal = frame[self.options['splitCol']][0]
       print('Training split: ', splitVal)
         
@@ -66,6 +100,7 @@ class CenterOfGravityModel(object):
       """
       Calls scoreSingleFrame for each scenarios specififed in the options['splitCol'] column
       """
+      type_check(frame, pd.DataFrame)
       frames = list(frame.groupby(by=self.options['splitCol']))
         
       outputFrame = None
@@ -77,10 +112,14 @@ class CenterOfGravityModel(object):
         
       return outputFrame
     
-    def haversine(self, lat1, lon1, lat2, lon2) -> float:
+    def haversine(self, lat1:float, lon1:float, lat2:float, lon2:float) -> float:
       """
       Haversine function, returns distance in miles
       """
+      type_check(lat1, float)
+      type_check(lon1, float)
+      type_check(lat2, float)
+      type_check(lon2, float)
       R = 3959.87433 # this is in miles.  For Earth radius in kilometers use 6372.8 km
         
       dLat = radians(lat2 - lat1)
@@ -97,6 +136,7 @@ class CenterOfGravityModel(object):
       """
       Assigns clusters and identifies centroids of each cluster via the kmeans algorithm
       """
+      type_check(frame, pd.DataFrame)
       splitVal = frame[self.options['splitCol']][0]
       print('Scoring split: ', splitVal)
         
@@ -133,6 +173,8 @@ def createMap(data: pd.DataFrame, options: dict) -> folium.Map():
     Outputs a folium map with all the layers outlined in the the CenterOfGravityModel output
     
     """
+    type_check(data, pd.DataFrame)
+    type_check(options, dict)
     the_map = folium.Map(location=data[[options['latCol'], options['lonCol']]].mean(),
                fit_bounds=[[data[options['latCol']].min(),
                             data[options['lonCol']].min()], 
@@ -248,6 +290,9 @@ def populateMapOptions(options:dict, map_options:dict, data: pd.DataFrame) -> di
   Options dictionary of the form to be passed to the createMap function, but with
   the scenarioColors and centroidOptions values populated automatically with defaults
   """
+  type_check(options, dict)
+  type_check(map_options, dict)
+  type_check(data, pd.DataFrame)
   scenarios = list(data[options['splitCol']])
   scenColors = {}
   colors = list(['red', 'green', 'blue', 'black', 'orange'])
