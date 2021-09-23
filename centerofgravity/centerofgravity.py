@@ -66,6 +66,10 @@ class CenterOfGravityModel(object):
       Calls trainSingleFrame function on each split specified in the options['splitCol'] column
       """
       type_check(frame, pd.DataFrame)
+      assert (self.options['latCol'] in frame.columns) , "latCol not found in frame columns"
+      assert (self.options['lonCol'] in frame.columns) , "lonCol not found in frame columns"
+      assert (self.options['splitCol'] in frame.columns) , "splotCol not found in frame columns"
+      assert (self.options['weightCol'] in frame.columns) , "weightCol not found in frame columns"
       self.models = dict()
         
       frames = list(frame.groupby(by=self.options['splitCol']))
