@@ -8,7 +8,7 @@ Created on Thu Sep  9 10:19:49 2021
 from setuptools import setup
 
 setup(name='centerofgravity',
-      version='1.0.0',
+      version='1.0.1',
       description='Automated Center of Gravity Mapping',
       url='https://github.com/abrammoats/centerofgravity',
       download_url = 'https://github.com/abrammoats/centerofgravity/archive/refs/tags/1.0.0.tar.gz',
