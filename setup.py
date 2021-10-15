@@ -21,8 +21,6 @@ setup(name='centerofgravity',
         'pandas',
         'scikit-learn',
         'numpy',
-        'json',
-        'math',
         'folium'
       ],
       classifiers=[
